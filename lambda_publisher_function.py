@@ -8,7 +8,7 @@ try:
     import time
     from datetime import datetime
     from jinja2 import Environment, FileSystemLoader
-    from pydantic import BaseModel
+    from pydantic import BaseModel,validator
 
     print("All modules are properly imported ...")
 
@@ -31,6 +31,11 @@ def employee_data_validation(employee_data):
         street_name : str
         city_name : str
         zip_code : int
+        
+        @validator('zip_code',pre= False)
+        def zip_code(cls,value):
+            if value> 100000 or value < 9999:
+                raise ValueError("Zip code must have only numbers and must be five digits in length")
 
     class EmployeeDataModel(BaseModel):
         name : str
@@ -48,12 +53,12 @@ def employee_data_validation(employee_data):
                 print(f"{datetime.now()} - Invalid employee_id,Please provide valid employee_id.")
                 raise ValueError("Invalid employee_id,Please provide valid employee_id.")
 
-            elif "zip_code" in error["loc"] and error["type"]=='int_parsing':
+            elif "zip_code" in error["loc"]:
                 print(f"{datetime.now()} - Please provide  a valid zip_code")
                 raise ValueError("Invalid zip_code,Please provide valid zip_code.")
             else:
                 raise InputValidationException("This is not valid form of data that is expected please check the employee data entered")
-            
+
 
 def lambda_handler(event, context):
     print(f"{datetime.now()} - Lambda function execution started.")
@@ -62,7 +67,7 @@ def lambda_handler(event, context):
         employee_data = json.loads(event.get("body",{})).get("EmployeeDetails")
     else:
         employee_data = event.get("EmployeeDetails", {})
-    
+
     #aws_data_source = event.get("aws_data_source", {})
     sqs_queue_url = os.environ.get('SQS_QUEUE_URL')
 
@@ -118,7 +123,7 @@ def lambda_handler(event, context):
           "isBase64Encoded": False,
           "body": "{\n  \"message\": \"Error occured while placing messages in the queue please refer Cloud watch logs for more information\"\n}"
         }
-        return result   
+        return result
     except Exception as e:
         print(f"{datetime.now()} - An error occurred: {str(e)}")
         result = {
