@@ -2,7 +2,13 @@
   "EmployeeDetails": {
     "name": "{{ employee.name }}",
     "employee_id": "{{ employee.employee_id }}",
-    "local_address": "{{ employee.local_address }}"
-  }
-
+    "local_address": {
+      "apartment_number": "{{ employee.local_address.apartment_number }}",
+      "street_name": "{{ employee.local_address.street_name }}",
+      "city_name": "{{ employee.local_address.city_name }}",
+      "zip_code": {{ employee.local_address.zip_code }}
+    }
+  },
+  "message_guid": "{{ employee.message_guid }}"
 }
+ 

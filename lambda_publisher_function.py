@@ -9,6 +9,7 @@ try:
     from datetime import datetime
     from jinja2 import Environment, FileSystemLoader
     from pydantic import BaseModel,validator
+    import uuid
 
     print("All modules are properly imported ...")
 
@@ -31,11 +32,12 @@ def employee_data_validation(employee_data):
         street_name : str
         city_name : str
         zip_code : int
-        
+
         @validator('zip_code',pre= False)
         def zip_code(cls,value):
             if value> 100000 or value < 9999:
                 raise ValueError("Zip code must have only numbers and must be five digits in length")
+            return value
 
     class EmployeeDataModel(BaseModel):
         name : str
@@ -68,18 +70,18 @@ def lambda_handler(event, context):
     else:
         employee_data = event.get("EmployeeDetails", {})
 
-    #aws_data_source = event.get("aws_data_source", {})
     sqs_queue_url = os.environ.get('SQS_QUEUE_URL')
 
     try:
         sqs = boto3.client('sqs')
         start_time = time.time()
-        print("Input event data  is ",event)
-        print("Input employeee_data is ",employee_data)
+        print(f"{datetime.now()} - Data we recivied right now before processing : {employee_data}")
         employee_data=employee_data_validation(employee_data)
+        print(f"{datetime.now()} - Data we have currently after validation  : {employee_data}")
+        guid = str(uuid.uuid4())
+        employee_data["message_guid"] = guid
         message = employee_object_generater(employee_data)
         print(f"{datetime.now()} - The message we are sending right now is : {message}")
-
         response = sqs.send_message(QueueUrl=sqs_queue_url, MessageBody=json.dumps(message))
 
         print(f"{datetime.now()} - Message sent to the queue with url: {sqs_queue_url}")
@@ -96,7 +98,10 @@ def lambda_handler(event, context):
             "Content-Type": "application/json"
           },
           "isBase64Encoded": False,
-          "body": "{\n  \"message\": \"All messages are placed in the queue\"\n}"
+          "body": json.dumps({
+          "message": "Message is placed in SQS queue",
+          "UUID": guid
+           }, indent=2)
         }
 
         print(f"{datetime.now()} - Lambda function execution result: {json.dumps(result, indent=2)}")
