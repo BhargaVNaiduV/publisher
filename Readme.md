@@ -39,3 +39,4 @@ we check the rows in the Dynamo DB will follow this structure
 <img width="719" alt="image" src="https://github.com/BhargaVNaiduV/publisher/assets/138513686/5477b5d1-977b-4244-96a1-3aaedfa0c105">
 
 ....
+Making one more change 
