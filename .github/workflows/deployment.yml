@@ -11,6 +11,6 @@ jobs:
         with:
           node-version: 18
       - name: install dependensics
-        run: npm ci
+        run: npm@5 ci
       - name: Run tests
         run:  npm test
