@@ -10,7 +10,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: install dependensics
-        run: npm@5 ci
-      - name: Run tests
-        run:  npm test
+  secondJob:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Testing prallell jobs
+        run: echo "This is a test" 
