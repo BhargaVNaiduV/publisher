@@ -1,0 +1,16 @@
+name: Deployment Project
+on: [push,workflow_dispatch]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: This step is used to get code using pre-defined github actions 
+        uses: actions/checkout@v3
+      - name: Install Nodejs
+        uses: actions/step-node@v3
+        with:
+          node-version: 18
+      - name: install dependensics
+        run: npm ci
+      - name: Run tests
+        run:  npm test
