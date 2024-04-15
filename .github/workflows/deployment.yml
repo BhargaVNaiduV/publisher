@@ -11,7 +11,8 @@ jobs:
         with:
           node-version: 18
   secondJob:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Testing prallell jobs
-        run: echo "This is a test" 
+        run: echo "This is a test"
