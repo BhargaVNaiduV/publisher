@@ -12,16 +12,6 @@ jobs:
         id: fetch-branch-name
         uses: xt0rted/pull-request-comment-branch@v3
       - name: This step is used to get code using pre-defined github actions 
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{steps.fetch-branch-name.outputs.head_ref  || github.ref }}
-      - name: Install Nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-  secondJob:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Testing prallell jobs
-        run: echo "This is a test"
