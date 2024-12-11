@@ -1,11 +1,20 @@
 name: Deployment Project
-on: [push,workflow_dispatch]
+on:
+  push:
+    tags:
+      - "*"
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps: 
+    steps:
+      - name: Fetech branch name
+        if: github.event.issue.pull_request
+        id: fetch-branch-name
+        uses: xt0rted/pull-request-comment-branch@v3
       - name: This step is used to get code using pre-defined github actions 
         uses: actions/checkout@v3
+        with:
+          ref: ${{steps.fetch-branch-name.outputs.head_ref  || github.ref }}
       - name: Install Nodejs
         uses: actions/setup-node@v3
         with:
