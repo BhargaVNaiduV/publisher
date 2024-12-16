@@ -1,42 +1,43 @@
-This Lambda function receives HTTP requests containing employee data in JSON format. It performs validation using data modeling modules like Pydantic to ensure the data's integrity. If the data is valid, it generates a unique GUID for each message and puts the message into an SQS queue.
-testing commit script 
+# Employee Data Publisher Lambda Function
 
-The Request will be of below format will be sent to api gateway
+This repository contains a Lambda function that processes HTTP requests containing employee data. The function validates the incoming data using Pydantic to ensure data integrity, generates a unique GUID for each message, and publishes the validated messages to an SQS queue.
 
-curl -X POST   -H "Content-Type: application/json"   -d '{
-    "EmployeeDetails": {
-        "name": "dhfhffhf",
-        "employee_id": "1234",
-        "local_address": {
-            "apartment_number": "123",
-            "street_name": "1364647 ",
-            "city_name": "concord",
-            "zip_code": "28027"
+---
+
+## **How It Works**
+
+1. **Input Validation**: 
+   - Employee data is received in JSON format through an API Gateway.
+   - Validation is performed using **Pydantic** to ensure the data adheres to the expected structure and constraints.
+
+2. **GUID Generation**: 
+   - A unique GUID is generated for each valid message.
+
+3. **Message Publishing**: 
+   - Valid messages are placed into an SQS queue for further processing.
+
+4. **Error Handling**: 
+   - If validation fails, an error response is returned, and details can be found in the CloudWatch logs.
+
+---
+
+## **Request Format**
+
+The API Gateway expects HTTP POST requests with JSON payloads in the following format:
+
+```bash
+curl -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+        "EmployeeDetails": {
+            "name": "John Doe",
+            "employee_id": "1234",
+            "local_address": {
+                "apartment_number": "123",
+                "street_name": "Main Street",
+                "city_name": "Concord",
+                "zip_code": "28027"
+            }
         }
-    }
-}' https://*********.execute-api.eu-**north**-1.amazonaw**s.com/dev/*****-message
-
-
-
-Sucsses Full Responce looks like this 
-
-{
-  "message": "All messages are placed in the queue"
-}
-
-
-If the employee data fails  at validation checks in publisher then  reponce will look like this 
-
-{
-  "message": "Error occured while placing messages in the queue please refer Cloud watch logs for more information"
-}
-
-
-we check the rows in the Dynamo DB will follow this structure 
-
-
-
-<img width="719" alt="image" src="https://github.com/BhargaVNaiduV/publisher/assets/138513686/5477b5d1-977b-4244-96a1-3aaedfa0c105">
-
-....
-Making one more change 
+    }' \
+  https://<API-GATEWAY-ENDPOINT>/dev/publish-message
